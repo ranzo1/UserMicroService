@@ -10,8 +10,8 @@ namespace UserMicroService.Models
 
         public int Id { get; set; }
         public string UserName { get; set; }
-        public string UserEmail { get; set; }
-        public string UserAddress { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
         public string ZipCode { get; set; }
         public string CityName { get; set; }
         public string CountryName { get; set; }
