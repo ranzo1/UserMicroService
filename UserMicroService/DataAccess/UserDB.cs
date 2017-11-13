@@ -17,7 +17,7 @@ namespace UserMicroService.DataAccess
             User userToReturn = new User();
 
             userToReturn.Id = (int)reader["Id"];
-            userToReturn.UserName = (string)reader["UserName"];
+            userToReturn.Name = (string)reader["Name"];
             userToReturn.Address = (string)reader["Address"];
             userToReturn.Email = (string)reader["Email"];
             userToReturn.UserTypeId = (int)reader["UserTypeId"];
@@ -43,7 +43,8 @@ namespace UserMicroService.DataAccess
                         [user].[User]
                     WHERE 
                         [Id]=@Id ");
-                    command.Parameters.Add("@Id", SqlDbType.Int,id);
+                    command.Parameters.Add("@Id", SqlDbType.Int);
+                    command.Parameters["@Id"].Value = id;
                     connection.Open();
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -63,7 +64,7 @@ namespace UserMicroService.DataAccess
         }
 
 
-        public static List<User> GetAllUserById(int id)
+        public static List<User> GetAllUsers()
         {
 
             try
@@ -79,8 +80,8 @@ namespace UserMicroService.DataAccess
                     * FROM 
                         [user].[User]
                     ");
-                    command.Parameters.Add("@Id", SqlDbType.Int, id);
 
+                    connection.Open();
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                        while (reader.Read())
@@ -97,6 +98,43 @@ namespace UserMicroService.DataAccess
             }
 
         }
+
+       /* public static User CreateUser(User newUser)
+        {
+
+            try
+            {
+               // User user = new User();
+
+                using (SqlConnection connection = new SqlConnection(DBFunctions.ConnectionString))
+                {
+                    SqlCommand command = connection.CreateCommand();
+                    command.CommandText = String.Format(@"
+                
+                    INSERT INTO [user].[User](Name,Address,Email,UserTypeId)
+                    values(@Name,@Address,@Email,@UserTypeId) "
+
+
+                     );
+                    //command.Parameters.Add("@Id", SqlDbType.Int);
+                   // command.Parameters["@Id"].Value = id;
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            user = ReadRowFromDB(reader);
+                        }
+                    }
+                }
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }*/
 
 
     }

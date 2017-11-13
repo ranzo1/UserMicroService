@@ -15,5 +15,11 @@ namespace UserMicroService.Controllers
         {
             return UserDB.GetUserById(id);
         }
+
+        [Route("api/User")]
+        public List<User> GetAllUsers()
+        {
+            return UserDB.GetAllUsers();
+        }
     }
 }
