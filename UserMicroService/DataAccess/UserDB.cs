@@ -1,89 +1,103 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using UserMicroService.Models;
 using UserMicroService.Util;
+using System.Data;
 
 namespace UserMicroService.DataAccess
 {
     public static class UserDB
     {
 
-        public static List<User> usersInMemory = new List<User>();
-
-        public static List<User> GetUsers()   
+        public static User ReadRowFromDB(SqlDataReader reader)
         {
-            return usersInMemory;
+            User userToReturn = new User();
+
+            userToReturn.Id = (int)reader["Id"];
+            userToReturn.UserName = (string)reader["UserName"];
+            userToReturn.Address = (string)reader["Address"];
+            userToReturn.Email = (string)reader["Email"];
+            userToReturn.UserTypeId = (int)reader["UserTypeId"];
+
+            return userToReturn;
         }
 
 
         public static User GetUserById(int id)
         {
 
-            foreach (User user in usersInMemory)
+            try
             {
-                if (user.Id == id)
+                User user = new User();
+
+                using (SqlConnection connection = new SqlConnection(DBFunctions.ConnectionString))
                 {
-
-                    return user;
+                    SqlCommand command = connection.CreateCommand();
+                    command.CommandText = String.Format(@"
+                
+                    SELECT
+                    * FROM 
+                        [user].[User]
+                    WHERE 
+                        [Id]=@Id ");
+                    command.Parameters.Add("@Id", SqlDbType.Int,id);
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            user = ReadRowFromDB(reader);
+                        }
+                    }
                 }
+                return user;
             }
-            return null;
-        }
-
-        public static User GetUserByName(string userName)
-        {
-
-            foreach (User user in usersInMemory)
+            catch (Exception ex)
             {
-                if (user.UserName ==userName)
-                {
-
-                    return user;
-                }
+                throw ex;
             }
-            return null;
-
+            
         }
 
 
-        public static User CreateUser(User user)
+        public static List<User> GetAllUserById(int id)
         {
 
-            usersInMemory.Add(user);
-            return GetUserById(user.Id);
-
-        }
-
-        public static User UpdateUser(User updateUser)
-        {
-
-            foreach (User userInList in usersInMemory)
+            try
             {
-                if (userInList.Id == updateUser.Id)
+                List<User>users = new List<User>();
+
+                using (SqlConnection connection = new SqlConnection(DBFunctions.ConnectionString))
                 {
-                    userInList.UserName = updateUser.UserName;
-                    userInList.Address = updateUser.Address;
-                    userInList.Active = updateUser.Active;
-                    userInList.Phone = updateUser.Phone;
-                    userInList.Email = updateUser.Email;
-                    userInList.CityName = updateUser.CityName;
-                    userInList.CountryName = updateUser.CountryName;
-                    userInList.ZipCode = updateUser.ZipCode;
+                    SqlCommand command = connection.CreateCommand();
+                    command.CommandText = String.Format(@"
+                
+                    SELECT
+                    * FROM 
+                        [user].[User]
+                    ");
+                    command.Parameters.Add("@Id", SqlDbType.Int, id);
 
-                    return updateUser;
-
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                       while (reader.Read())
+                        {
+                            users.Add(ReadRowFromDB(reader));
+                        }
+                    }
                 }
+                return users;
             }
-            return null;
-
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
         }
 
-        public static void DeleteUser(User deleteUser)
-        {
-            usersInMemory.Remove(deleteUser);
-        }
+
     }
 }

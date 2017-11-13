@@ -9,6 +9,7 @@ namespace UserMicroService.Models
     {
 
         public int Id { get; set; }
+        public int UserTypeId { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
@@ -17,6 +18,7 @@ namespace UserMicroService.Models
         public string CountryName { get; set; }
         public string Phone { get; set; }
         public bool Active { get; set; }
+       
 
 
     }
